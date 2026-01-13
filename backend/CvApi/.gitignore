@@ -1,0 +1,18 @@
+# .NET / C#
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.rsuser
+
+# Rider
+.idea/
+
+# ASP.NET Core
+appsettings.Development.json
+appsettings.Local.json
+
+# Publish output
+publish/
