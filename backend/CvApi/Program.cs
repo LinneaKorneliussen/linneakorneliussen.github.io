@@ -1,30 +1,38 @@
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-// ===== Services =====
+// ===== Frontend URL för CORS =====
+// Miljövariabel FRONTEND_URL används om satt, annars default localhost
+var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") 
+                  ?? "http://localhost:5173";
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+        policy.WithOrigins(frontendUrl, "https://linneakorneliussen.github.io")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
 });
 
+// ===== Services =====
 builder.Services.AddHttpClient<GitHubService>();
 builder.Services.AddSingleton<CVService>();
 
 var app = builder.Build();
 
+// ===== Middleware =====
 app.UseCors("AllowFrontend");
 
-// ===== CV endpoint =====
+// ===== Endpoints =====
 app.MapGet("/api/cv", (CVService cvService) => cvService.GetCV());
 
-// ===== Projects endpoint =====
 app.MapGet("/api/github-projects", async (GitHubService gitHubService) =>
 {
     var projects = await gitHubService.GetProjectsAsync();
     return projects;
 });
 
-// ===== README endpoint =====
 app.MapGet("/api/github-readme/{repoName}", async (string repoName, GitHubService gitHubService) =>
 {
     var readme = await gitHubService.GetReadmeAsync(repoName);

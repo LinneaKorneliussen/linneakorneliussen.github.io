@@ -19,6 +19,8 @@ export function useContactForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  const API = import.meta.env.VITE_API_BASE;
+
   const handleChange = (field: keyof ContactFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -29,7 +31,7 @@ export function useContactForm() {
     setSuccess(false);
 
     try {
-      const response = await fetch("/api/mail/send", {
+      const response = await fetch(`${API}/mail/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
